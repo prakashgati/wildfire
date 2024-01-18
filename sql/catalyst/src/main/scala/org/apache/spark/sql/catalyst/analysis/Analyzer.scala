@@ -57,6 +57,7 @@ import org.apache.spark.sql.internal.connector.V1Function
 import org.apache.spark.sql.types._
 import org.apache.spark.sql.types.DayTimeIntervalType.DAY
 import org.apache.spark.sql.util.CaseInsensitiveStringMap
+import org.apache.spark.util.Utils
 
 /**
  * A trivial [[Analyzer]] with a dummy [[SessionCatalog]] and
@@ -209,7 +210,13 @@ class Analyzer(override val catalogManager: CatalogManager) extends RuleExecutor
       val analyzed = executeAndTrack(plan, tracker)
       try {
         checkAnalysis(analyzed)
-        analyzed
+        val excludedPostAnalysisRulesConf =
+          conf.postAnalysisExcludesRules.toSeq.flatMap(Utils.stringToSeq)
+        postAnalysisEarlyOptimizationRules.filterNot(
+          rule => excludedPostAnalysisRulesConf.contains(rule.ruleName)).foldLeft(analyzed) {
+          case (rs, rule) =>
+            rule(rs)
+        }
       } catch {
         case e: AnalysisException =>
           throw new ExtendedAnalysisException(e, analyzed)
@@ -248,6 +255,8 @@ class Analyzer(override val catalogManager: CatalogManager) extends RuleExecutor
    * execute its rules in one pass.
    */
   val postHocResolutionRules: Seq[Rule[LogicalPlan]] = Nil
+
+  val postAnalysisEarlyOptimizationRules: Seq[Rule[LogicalPlan]] = Nil
 
   private def typeCoercionRules(): List[Rule[LogicalPlan]] = if (conf.ansiEnabled) {
     AnsiTypeCoercion.typeCoercionRules
@@ -350,6 +359,8 @@ class Analyzer(override val catalogManager: CatalogManager) extends RuleExecutor
     Batch("HandleSpecialCommand", Once,
       HandleSpecialCommand),
     Batch("Remove watermark for batch query", Once,
+      EliminateEventTimeWatermark),
+      Batch("Remove watermark for batch query", Once,
       EliminateEventTimeWatermark)
   )
 

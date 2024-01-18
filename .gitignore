@@ -120,3 +120,8 @@ node_modules
 sql/api/gen/
 sql/api/src/main/antlr4/org/apache/spark/sql/catalyst/parser/SqlBaseLexer.tokens
 sql/api/src/main/antlr4/org/apache/spark/sql/catalyst/parser/gen/
+
+# For Scala 2.12 and 2.13 version depdendent classes
+sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/expressions/ExpressionMap.scala
+sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/expressions/ConstraintSetImplicit.scala
+
