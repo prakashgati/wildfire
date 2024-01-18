@@ -115,8 +115,8 @@ import org.apache.spark.sql.types.DataType
  */
 
 class ConstraintSet private(
-    val baseSet: mutable.Set[Expression],
-    val originals: mutable.Buffer[Expression] = new mutable.ArrayBuffer(),
+    baseSet: mutable.Set[Expression],
+    originals: mutable.Buffer[Expression] = new mutable.ArrayBuffer(),
     val attribRefBasedEquivalenceList: Seq[mutable.Buffer[Attribute]],
     val expressionBasedEquivalenceList: Seq[mutable.Buffer[Expression]])
   extends ExpressionSet(baseSet, originals) with Logging with ConstraintHelper {

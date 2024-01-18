@@ -327,14 +327,16 @@ case class Filter(condition: Expression, child: LogicalPlan)
     val predicates = splitConjunctivePredicates(condition)
           .filterNot(SubqueryExpression.hasCorrelatedSubquery)
     // remove useless nullsafe filter if any for EqualTo predicates which are present
-    val nullSafePredsToRemove = predicates.flatMap[Expression] {
-        case EqualTo(l: Attribute, r: Attribute) => Seq(EqualNullSafe(l, r))
+    val nullSafePredsToRemove = predicates.flatMap {
+        case EqualTo(l: Attribute, r: Attribute) => Seq[Expression](EqualNullSafe(l, r))
 
-        case EqualTo(l@Cast(_: Attribute, _, _, _), r: Attribute) => Seq(EqualNullSafe(l, r))
+        case EqualTo(l@Cast(_: Attribute, _, _, _), r: Attribute) =>
+          Seq[Expression](EqualNullSafe(l, r))
 
-        case EqualTo(l: Attribute, r@Cast(_: Attribute, _, _, _)) => Seq(EqualNullSafe(l, r))
+        case EqualTo(l: Attribute, r@Cast(_: Attribute, _, _, _)) =>
+          Seq[Expression](EqualNullSafe(l, r))
 
-        case _ => Seq.empty
+        case _ => Seq.empty[Expression]
       }.toSet
     val netPreds = predicates.filterNot(nullSafePredsToRemove.contains)
     child.constraints.union(ExpressionSet(netPreds))
