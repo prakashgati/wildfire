@@ -58,17 +58,6 @@ class ExecutorSideSQLConfSuite extends SparkFunSuite with SQLTestUtils {
     }
   }
 
-  override def withSQLConf(pairs: (String, String)*)(f: => Unit): Unit = {
-    pairs.foreach { case (k, v) =>
-      SQLConf.get.setConfString(k, v)
-    }
-    try f finally {
-      pairs.foreach { case (k, _) =>
-        SQLConf.get.unsetConf(k)
-      }
-    }
-  }
-
   test("ReadOnlySQLConf is correctly created at the executor side") {
     withSQLConf("spark.sql.x" -> "a") {
       val checks = spark.range(10).mapPartitions { _ =>

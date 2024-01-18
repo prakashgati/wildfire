@@ -31,7 +31,8 @@ import org.apache.spark.sql.connector.catalog.CatalogManager
 import org.apache.spark.sql.internal.SQLConf
 import org.apache.spark.sql.types.{IntegerType, LongType}
 
-class OptimizedConstraintPropagationSuite extends ConstraintPropagationSuite
+class
+OptimizedConstraintPropagationSuite extends ConstraintPropagationSuite
   with PredicateHelper {
 
   val trivialConstraintAbsenceChecker = (constraints: ExpressionSet) => assert(
