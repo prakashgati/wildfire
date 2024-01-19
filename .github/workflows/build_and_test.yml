@@ -53,8 +53,8 @@ jobs:
   # Build: build Spark and run the tests for specified modules.
   build:
     name: "Build modules: ${{ matrix.modules }} ${{ matrix.comment }}"
-    needs: precondition
-    if: fromJson(needs.precondition.outputs.required).build == 'true'
+   
+    if: true
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
