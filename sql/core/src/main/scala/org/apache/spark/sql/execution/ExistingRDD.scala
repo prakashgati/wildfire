@@ -149,7 +149,12 @@ case class LogicalRDD(
     }
   }
 
-  override lazy val constraints: ExpressionSet = originConstraints.getOrElse(ExpressionSet())
+  override lazy val constraints: ExpressionSet = originConstraints.getOrElse(
+    if (conf.constraintPropagationEnabled) {
+      new ConstraintSet()
+    } else {
+      ExpressionSet()
+    })
 }
 
 object LogicalRDD extends Logging {

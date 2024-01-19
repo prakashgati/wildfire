@@ -58,7 +58,7 @@ class ExecutorSideSQLConfSuite extends SparkFunSuite with SQLTestUtils {
     }
   }
 
-  override def withSQLConf(pairs: (String, String)*)(f: => Unit): Unit = {
+  def withSQLConf(pairs: (String, String)*)(f: => Unit): Unit = {
     pairs.foreach { case (k, v) =>
       SQLConf.get.setConfString(k, v)
     }
