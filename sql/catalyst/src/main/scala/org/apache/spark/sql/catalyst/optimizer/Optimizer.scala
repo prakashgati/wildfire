@@ -1423,9 +1423,9 @@ object InferFiltersFromConstraints extends Rule[LogicalPlan]
         // For inner join, we can infer additional filters for both sides. LeftSemi is kind of an
         // inner join, it just dr   ops the right side in the final output.
         case _: InnerLike | LeftSemi =>
-          val (newLeft, newRight) =
-            inferAdditionalNewFilter(left, right.constraints, conditionOpt) ->
-            inferAdditionalNewFilter(right, left.constraints, conditionOpt)
+          val newLeft = inferAdditionalNewFilter(left, right.constraints, conditionOpt)
+          val newRight = inferAdditionalNewFilter(right, newLeft.constraints, conditionOpt)
+
           join.copy(left = newLeft, right = newRight)
 
         // For right outer join, we can only infer additional filters for left side.
