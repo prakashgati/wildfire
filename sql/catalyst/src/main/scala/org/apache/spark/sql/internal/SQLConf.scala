@@ -938,6 +938,14 @@ object SQLConf {
       .booleanConf
       .createWithDefault(true)
 
+  val USE_AGGS_NONTRIVIAL_FILTERS_TO_SELECT_BHJ_STRATEGY =
+    buildConf("spark.sql.execution.broadcastHashJoin.useAggsNonTrivialFiltersToSelectBHJStrategy")
+      .internal()
+      .doc("Use presence of Aggregates and non trivial filters to pick HashJoin")
+      .version("3.1.0")
+      .booleanConf
+      .createWithDefault(true)
+
   val PUSH_BROADCASTED_JOIN_KEYS_AS_FILTER_TO_SCAN =
     buildConf("spark.sql.execution.broadcastHashJoin.pushKeysAsFilterToScan")
       .internal()
@@ -5229,6 +5237,9 @@ class SQLConf extends Serializable with Logging with SqlApiConf {
 
   def preferAsBuildSideLegAlreadyBroadcasted: Boolean =
     getConf(PREFER_AS_BUILDSIDE_LEG_ALREADY_BROADCASTED)
+
+  def useAggsNonTrivialFiltersToSelectBHJStrategy: Boolean =
+    getConf(USE_AGGS_NONTRIVIAL_FILTERS_TO_SELECT_BHJ_STRATEGY)
 
   def pushBroadcastedJoinKeysASFilterToScan: Boolean =
     getConf(PUSH_BROADCASTED_JOIN_KEYS_AS_FILTER_TO_SCAN)

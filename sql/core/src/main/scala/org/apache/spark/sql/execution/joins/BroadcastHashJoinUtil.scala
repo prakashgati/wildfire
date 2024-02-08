@@ -260,7 +260,7 @@ object BroadcastHashJoinUtil {
               // and pushes run time filter (dynamic expression) on both.
               // so we need to tackle this here.
               val partitionCols = underlyingRuntimeFilteringScan
-                .filterAttributes()
+                .partitionAttributes()
                 .map(convertNameReferencesToString)
               // we are here means runtime filters added to batchscanexec is non empty
               val removeDpp = partitionCols.contains(streamsideJoinColName) ||
@@ -273,7 +273,7 @@ object BroadcastHashJoinUtil {
                   joinKeyIndex,
                   removeDpp))
             } else if (!underlyingRuntimeFilteringScan
-                .filterAttributes()
+                .partitionAttributes()
                 .map(convertNameReferencesToString)
                 .contains(streamsideJoinColName)) {
               Seq(
