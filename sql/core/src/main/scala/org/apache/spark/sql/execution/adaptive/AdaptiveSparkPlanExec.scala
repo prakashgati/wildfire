@@ -295,8 +295,9 @@ case class AdaptiveSparkPlanExec(
       var consecutiveNoDelayedStagesFound = 0
       orphanBatchScans ++= result.orphanBatchScansWithProxyVar
       var collectOrphans = OrphanBSCollect.no_collect
-      while (!result.allChildStagesMaterialized ||
-        (consecutiveNoDelayedStagesFound < 2 && loopCount > 0)) {
+      while ((!result.allChildStagesMaterialized ||
+        (consecutiveNoDelayedStagesFound < 2 && loopCount > 0)) &&
+        this.currentPhysicalPlan.children.nonEmpty) {
         if (Utils.isTesting) {
           assertBroadcastPushPresenceInBHJ(result.newPlan)
         }
@@ -471,6 +472,11 @@ case class AdaptiveSparkPlanExec(
         postStageCreationRules(supportsColumnar),
         Some((planChangeLogger, "AQE Post Stage Creation")))
       _isFinalPlan = true
+      BroadcastHashJoinUtil
+        .getAllBatchScansForSparkPlan(currentPhysicalPlan)
+        .filter(BroadcastHashJoinUtil.isBatchScanReady).foreach(
+        _.scan.asInstanceOf[SupportsRuntimeV2Filtering].postAllBroadcastVarsPushed())
+
       executionId.foreach(onUpdatePlan(_, Seq(currentPhysicalPlan)))
       currentPhysicalPlan
     }
